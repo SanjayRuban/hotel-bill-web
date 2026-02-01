@@ -3,15 +3,19 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Clone Repository') {
             steps {
-                checkout scm
+                sh '''
+                rm -rf hotel-bill-web || true
+                git clone https://github.com/SanjayRuban/hotel-bill-web.git
+                '''
             }
         }
 
         stage('Build JAR (Maven via Docker)') {
             steps {
                 sh '''
+                cd hotel-bill-web
                 docker run --rm \
                   -v "$PWD":/app \
                   -v "$HOME/.m2":/root/.m2 \
@@ -24,7 +28,10 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t hotel-bill-web .'
+                sh '''
+                cd hotel-bill-web
+                docker build -t hotel-bill-web .
+                '''
             }
         }
 
