@@ -5,8 +5,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/SanjayRuban/hotel-bill-web.git'
+                checkout scm
             }
         }
 
