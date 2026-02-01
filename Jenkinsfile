@@ -10,15 +10,16 @@ pipeline {
             }
         }
 
-        stage('Build with Maven (Docker)') {
-            agent {
-                docker {
-                    image 'maven:3.9.6-eclipse-temurin-17'
-                    args '-v /root/.m2:/root/.m2'
-                }
-            }
+        stage('Build JAR (Maven via Docker)') {
             steps {
-                sh 'mvn clean package'
+                sh '''
+                docker run --rm \
+                  -v "$PWD":/app \
+                  -v "$HOME/.m2":/root/.m2 \
+                  -w /app \
+                  maven:3.9.6-eclipse-temurin-17 \
+                  mvn clean package
+                '''
             }
         }
 
@@ -28,7 +29,7 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Run Application') {
             steps {
                 sh '''
                 docker stop hotel-bill || true
